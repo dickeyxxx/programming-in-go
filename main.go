@@ -8,7 +8,7 @@ import (
 
 var stdout io.Writer = os.Stdout
 var stderr io.Writer = os.Stderr
-var app App
+var app App = &CliApp{}
 
 var Commands = []string{"run"}
 
