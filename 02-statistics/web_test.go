@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -17,12 +16,10 @@ func TestWeb(t *testing.T) {
 		homePage(w, req)
 
 		Convey("it renders the html", func() {
-			fmt.Println(w.Body.String())
 			So(w.Body.String(), ShouldStartWith, "<!DOCTYPE HTML>")
 		})
 
 		Convey("it has no results", func() {
-			fmt.Println(w.Body.String())
 			So(w.Body.String(), ShouldNotContainSubstring, "Results")
 		})
 
@@ -39,12 +36,10 @@ func TestWeb(t *testing.T) {
 		homePage(w, req)
 
 		Convey("it renders the html", func() {
-			fmt.Println(w.Body.String())
 			So(w.Body.String(), ShouldStartWith, "<!DOCTYPE HTML>")
 		})
 
 		Convey("it has results", func() {
-			fmt.Println(w.Body.String())
 			So(w.Body.String(), ShouldContainSubstring, "Results")
 		})
 
