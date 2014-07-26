@@ -18,9 +18,7 @@ func ParseIni(ini []string) (doc map[string]map[string]string) {
 		if matches := groupRegex.FindStringSubmatch(line); len(matches) > 0 {
 			group = make(map[string]string)
 			doc[matches[1]] = group
-			continue
-		}
-		if matches := propRegex.FindStringSubmatch(line); len(matches) > 0 {
+		} else if matches := propRegex.FindStringSubmatch(line); len(matches) > 0 {
 			group[matches[1]] = matches[2]
 		}
 	}
