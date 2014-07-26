@@ -11,14 +11,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package m3u2pls
 
 import (
 	"fmt"
-	"io"
-	"io/ioutil"
 	"log"
-	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -31,21 +28,7 @@ type Song struct {
 	Seconds  int
 }
 
-func main() {
-	if len(os.Args) == 1 || !strings.HasSuffix(os.Args[1], ".m3u") {
-		fmt.Printf("usage: %s <file.m3u>\n", filepath.Base(os.Args[0]))
-		os.Exit(1)
-	}
-
-	if rawBytes, err := ioutil.ReadFile(os.Args[1]); err != nil {
-		log.Fatal(err)
-	} else {
-		songs := readM3uPlaylist(string(rawBytes))
-		writePlsPlaylist(songs, os.Stdout)
-	}
-}
-
-func readM3uPlaylist(data string) (songs []Song) {
+func ReadM3uPlaylist(data string) (songs []Song) {
 	var song Song
 	for _, line := range strings.Split(data, "\n") {
 		line = strings.TrimSpace(line)
@@ -62,26 +45,26 @@ func readM3uPlaylist(data string) (songs []Song) {
 			song = Song{}
 		}
 	}
-	return songs
+	return
 }
 
 func splitLine(line string) []string {
 	return strings.Split(line, "=")
 }
 
-func readPlsPlaylist(data string) (songs []Song) {
+func ReadPlsPlaylist(data string) (songs []Song) {
 	for _, line := range strings.Split(data, "\n") {
 		if strings.HasPrefix(line, "NumberOfEntries") {
 			numSongs, _ := strconv.Atoi(splitLine(line)[1])
 			songs = make([]Song, numSongs)
+			break
 		}
 	}
 
 	regex := regexp.MustCompile(`([a-zA-Z]+)(\d+)=(.*)`)
 	var i int
 	for _, line := range strings.Split(data, "\n") {
-		parsedLine := regex.FindStringSubmatch(line)
-		if parsedLine != nil {
+		if parsedLine := regex.FindStringSubmatch(line); parsedLine != nil {
 			if parsedLine[1] == "File" {
 				i, _ = strconv.Atoi(parsedLine[2])
 				songs[i-1].Filename = parsedLine[3]
@@ -94,7 +77,7 @@ func readPlsPlaylist(data string) (songs []Song) {
 			}
 		}
 	}
-	return songs
+	return
 }
 
 func parseExtinfLine(line string) (title string, seconds int) {
@@ -121,22 +104,24 @@ func mapPlatformDirSeparator(char rune) rune {
 	return char
 }
 
-func writePlsPlaylist(songs []Song, stdout io.Writer) {
-	fmt.Fprintln(stdout, "[playlist]")
+func WritePlsPlaylist(songs []Song) string {
+	lines := []string{"[playlist]"}
 	for i, song := range songs {
 		i++
-		fmt.Fprintf(stdout, "File%d=%s\n", i, song.Filename)
-		fmt.Fprintf(stdout, "Title%d=%s\n", i, song.Title)
-		fmt.Fprintf(stdout, "Length%d=%d\n", i, song.Seconds)
+		lines = append(lines, fmt.Sprintf("File%d=%s", i, song.Filename))
+		lines = append(lines, fmt.Sprintf("Title%d=%s", i, song.Title))
+		lines = append(lines, fmt.Sprintf("Length%d=%d", i, song.Seconds))
 	}
-	fmt.Fprintf(stdout, "NumberOfEntries=%d\nVersion=2\n", len(songs))
+	lines = append(lines, fmt.Sprintf("NumberOfEntries=%d", len(songs)))
+	lines = append(lines, "Version=2")
+	return strings.Join(lines, "\n")
 }
 
-func writeM3uPlaylist(songs []Song, stdout io.Writer) {
-	fmt.Fprint(stdout, "#EXTM3U")
+func WriteM3uPlaylist(songs []Song) string {
+	lines := []string{"#EXTM3U"}
 	for _, song := range songs {
-		fmt.Fprintln(stdout)
-		fmt.Fprintf(stdout, "#EXTINF:%d,%s\n", song.Seconds, song.Title)
-		fmt.Fprint(stdout, song.Filename)
+		lines = append(lines, fmt.Sprintf("#EXTINF:%d,%s", song.Seconds, song.Title))
+		lines = append(lines, song.Filename)
 	}
+	return strings.Join(lines, "\n")
 }
