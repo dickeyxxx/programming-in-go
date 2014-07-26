@@ -9,12 +9,7 @@ import (
 // Given an object representing an ini file, returns a string for saving to a .ini file.
 func PrintIni(doc map[string]map[string]string) string {
 	lines := []string{}
-	var groups []string
-	for group, _ := range doc {
-		groups = append(groups, group)
-	}
-	sort.Strings(groups)
-	for _, group := range groups {
+	for _, group := range orderedGroupNames(doc) {
 		lines = append(lines, fmt.Sprintf("[%s]", group))
 		lines = append(lines, printProperties(doc[group])...)
 	}
@@ -23,13 +18,24 @@ func PrintIni(doc map[string]map[string]string) string {
 }
 
 func printProperties(properties map[string]string) (lines []string) {
-	var names []string
+	for _, name := range orderedPropertyNames(properties) {
+		lines = append(lines, fmt.Sprintf("%s=%s", name, properties[name]))
+	}
+	return
+}
+
+func orderedGroupNames(doc map[string]map[string]string) (names []string) {
+	for name := range doc {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	return
+}
+
+func orderedPropertyNames(properties map[string]string) (names []string) {
 	for name := range properties {
 		names = append(names, name)
 	}
 	sort.Strings(names)
-	for _, name := range names {
-		lines = append(lines, fmt.Sprintf("%s=%s", name, properties[name]))
-	}
 	return
 }
