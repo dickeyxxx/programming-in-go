@@ -7,5 +7,5 @@ func Flatten(source [][]int) (results []int) {
 			results = append(results, i)
 		}
 	}
-	return results
+	return
 }

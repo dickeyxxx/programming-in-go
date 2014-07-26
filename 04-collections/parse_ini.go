@@ -9,8 +9,8 @@ var groupRegex = regexp.MustCompile(`\[(\w+)\]`)
 var propRegex = regexp.MustCompile(`(\w+) ?= ?(.+)`)
 
 // Given a slice of strings from an .ini file, parses the text into a document.
-func ParseIni(ini []string) map[string]map[string]string {
-	doc := map[string]map[string]string{}
+func ParseIni(ini []string) (doc map[string]map[string]string) {
+	doc = map[string]map[string]string{}
 	group := map[string]string{}
 	doc["General"] = group
 	for _, line := range ini {
@@ -29,5 +29,5 @@ func ParseIni(ini []string) map[string]map[string]string {
 	if len(doc["General"]) == 0 {
 		delete(doc, "General")
 	}
-	return doc
+	return
 }

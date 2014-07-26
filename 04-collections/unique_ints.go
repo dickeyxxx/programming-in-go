@@ -9,5 +9,5 @@ func UniqueInts(source []int) (results []int) {
 			seen[i] = true
 		}
 	}
-	return results
+	return
 }
