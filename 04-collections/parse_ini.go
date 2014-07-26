@@ -15,14 +15,12 @@ func ParseIni(ini []string) (doc map[string]map[string]string) {
 	doc["General"] = group
 	for _, line := range ini {
 		line = strings.TrimSpace(line)
-		matches := groupRegex.FindStringSubmatch(line)
-		if len(matches) > 0 {
+		if matches := groupRegex.FindStringSubmatch(line); len(matches) > 0 {
 			group = make(map[string]string)
 			doc[matches[1]] = group
 			continue
 		}
-		matches = propRegex.FindStringSubmatch(line)
-		if len(matches) > 0 {
+		if matches := propRegex.FindStringSubmatch(line); len(matches) > 0 {
 			group[matches[1]] = matches[2]
 		}
 	}
