@@ -1,5 +1,6 @@
 package strings
 
+// Given a slice of integers, returns a matrix of integers with columns in each.
 func Make2D(source []int, columns int) [][]int {
 	matrix := make([][]int, neededRows(source, columns))
 	for i, _ := range matrix {

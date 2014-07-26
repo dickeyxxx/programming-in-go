@@ -5,6 +5,7 @@ import (
 	"sort"
 )
 
+// Given an object representing an ini file, returns a string for saving to a .ini file.
 func PrintIni(doc map[string]map[string]string) (ini string) {
 	var groups []string
 	for group, _ := range doc {
