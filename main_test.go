@@ -15,6 +15,7 @@ type fakeApp struct {
 
 func (a *fakeApp) Exit(code int) {
 	a.exitCode = code
+	panic("exit")
 }
 
 func (a *fakeApp) Args() []string {
@@ -28,7 +29,7 @@ func TestMain(t *testing.T) {
 
 		Convey("running with no command", func() {
 			app = &fakeApp{args: []string{"foo"}}
-			main()
+			So(main, ShouldPanicWith, "exit")
 
 			Convey("it prints the usage", func() {
 				So(output(stderr), ShouldStartWith, "USAGE: foo [command]")
@@ -41,7 +42,7 @@ func TestMain(t *testing.T) {
 
 		Convey("running with a nonexistant command", func() {
 			app = &fakeApp{args: []string{"foo", "???"}}
-			main()
+			So(main, ShouldPanicWith, "exit")
 
 			Convey("it prints the usage", func() {
 				So(output(stderr), ShouldStartWith, "USAGE: foo [command]")

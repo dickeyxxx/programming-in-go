@@ -24,15 +24,14 @@ var Commands = []string{"run"}
 
 // Main entry point
 func main() {
-	if len(app.Args()) > 1 {
-		switch app.Args()[1] {
-		case "run":
-			Run()
-		default:
-			printUsage()
-			app.Exit(1)
-		}
-	} else {
+	if len(app.Args()) < 2 {
+		printUsage()
+		app.Exit(1)
+	}
+	switch app.Args()[1] {
+	case "run":
+		Run()
+	default:
 		printUsage()
 		app.Exit(1)
 	}
