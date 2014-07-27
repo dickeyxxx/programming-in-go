@@ -2,14 +2,23 @@ package procedural
 
 import "unicode/utf8"
 
+// returns true if palindrome, false otherwise
 func IsPalindrome(s string) bool {
-	if utf8.RuneCountInString(s) <= 1 {
-		return true
+	runes := runes(s)
+	for i := range runes {
+		if runes[i] != runes[len(runes)-i-1] {
+			return false
+		}
 	}
-	first, sizeOfFirst := utf8.DecodeRuneInString(s)
-	last, sizeOfLast := utf8.DecodeLastRuneInString(s)
-	if first != last {
-		return false
+	return true
+}
+
+func runes(s string) []rune {
+	t := make([]rune, utf8.RuneCountInString(s))
+	i := 0
+	for _, r := range s {
+		t[i] = r
+		i++
 	}
-	return IsPalindrome(s[sizeOfFirst : len(s)-sizeOfLast])
+	return t
 }
